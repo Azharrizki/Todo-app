@@ -11,7 +11,7 @@ const AddNoteForm = () => {
 
 	const navigate = useNavigate();
 
-	// handleTitle dan handleNote adalah event handler untuk menyimpan data dari form input ke dalam state
+	// handleTitle atau handleNote adalah event handler untuk menyimpan data dari form input ke dalam state
 	const handleTitleChange = (e) => {
 		setState({ ...state, title: e.target.value });
 	};
