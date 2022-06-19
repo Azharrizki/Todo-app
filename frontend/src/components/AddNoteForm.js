@@ -34,32 +34,50 @@ const AddNoteForm = () => {
 		Jika tidak ada data di dalam 'notes' maka buat array kosong []
 		*/
 
-		const notes = getLocalstorage("notes");
+		// const notes = getLocalstorage("notes");
 
 		/* 
 		Setiap note harus memiliki id unik untuk membedakan dengan data note yang lain
 		Kita bisa menggunakan package uuid dari npm
 		untuk menginstallnya gunakan command => npm add uuid
 		*/
-		const noteId = uuidv4();
+		// const noteId = uuidv4();
 
 		// Tambahkan data note + noteId di dalam state ke array existing
 		// existing[noteId] = state;
-		notes.push({ id: noteId, ...state });
+		// notes.push({ id: noteId, ...state });
 
 		/*
 		Simpan data ke localStorage dengan command localStorage.setItem()
 		Gunakan method JSON.stringfy() untuk mengubah object ke string
 		karena localStorage hanya bisa menyimpan tipe data String
 		*/
-		localStorage.setItem("notes", JSON.stringify(notes));
+		// localStorage.setItem("notes", JSON.stringify(notes));
 
 		// Membiarkan react menghandle data yang disubmit
+		// e.preventDefault();
+		// navigate("/");
+		// window.alert("Selamat note berhasil ditambah");
+
+		const options = {
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify(state),
+		};
+
+		const fetchData = async () => {
+			const response = await fetch("http://localhost:3001/note", options);
+			if (response.ok) {
+				window.alert("Data berhasil ditambahkan");
+				navigate("/");
+			} else {
+				console.log(response.statusText);
+			}
+		};
+
+		fetchData();
+
 		e.preventDefault();
-
-		navigate("/");
-
-		window.alert("Selamat note berhasil ditambah");
 	};
 
 	const { title, note } = state;

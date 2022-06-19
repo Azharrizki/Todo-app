@@ -20,7 +20,7 @@ const EditNoteForm = () => {
 	/*
 	Mengambil seluruh data di localstorage kemudiaan data disimpan ke dalam state bernama allNotes untuk selanjutnya mengganti yang lama.
 	*/
-	const [allNotes, setAllNotes] = useState(null);
+	// const [allNotes, setAllNotes] = useState(null);
 	const [currentNote, setCurrentNote] = useState({ title: "", note: "" });
 
 	// const [state, setState] = useState({ title: "", note: "" });
@@ -30,18 +30,27 @@ const EditNoteForm = () => {
 	oleh karena itu kita menggunakan useEffect()
 	*/
 	useEffect(() => {
-		const notes = getLocalstorage("notes");
-
-		setAllNotes(notes);
-
+		// const notes = getLocalstorage("notes");
+		// setAllNotes(notes);
 		// Mengambil noteId dari path yang sedang diakses
+		// const noteId = location.pathname.replace("/edit/", "");
+		// Mengambil data note yang akan diedit
+		// const currentNote = notes.filter((note) => note.id === noteId);
+		// Simpan data note ke state
+		// setCurrentNote(currentNote[0]);
+
 		const noteId = location.pathname.replace("/edit/", "");
 
-		// Mengambil data note yang akan diedit
-		const currentNote = notes.filter((note) => note.id === noteId);
+		const fetchData = async () => {
+			const response = await fetch(
+				`http://localhost:3001/note/${noteId}`,
+			);
+			const data = await response.json();
 
-		// Simpan data note ke state
-		setCurrentNote(currentNote[0]);
+			setCurrentNote(data);
+		};
+
+		fetchData();
 	}, []);
 
 	const handleTitleChange = (e) => {
@@ -54,48 +63,80 @@ const EditNoteForm = () => {
 
 	const handleSubmit = (e) => {
 		// Update data notes
-		const newNotes = allNotes.map((note) => {
-			if (note.id === currentNote.id) {
-				return {
-					...note,
-					title: currentNote.title,
-					note: currentNote.note,
-				};
-			} else {
-				return note;
-			}
-		});
-
+		// const newNotes = allNotes.map((note) => {
+		// 	if (note.id === currentNote.id) {
+		// 		return {
+		// 			...note,
+		// 			title: currentNote.title,
+		// 			note: currentNote.note,
+		// 		};
+		// 	} else {
+		// 		return note;
+		// 	}
+		// });
 		// Replace data notes yang lama di local storage
-		localStorage.setItem("notes", JSON.stringify(newNotes));
+		// localStorage.setItem("notes", JSON.stringify(newNotes));
+		// e.preventDefault();
+		// navigate("/");
+		// window.alert("Selamat data berhasil diubah!");
+
+		const options = {
+			method: "PUT",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify(currentNote),
+		};
+
+		const submitData = async () => {
+			const response = await fetch(
+				`http://localhost:3001/note/${currentNote._id}`,
+				options,
+			);
+			if (response.ok) {
+				window.alert("Data successfully updated");
+			} else {
+				window.alert(response.status, response.statusText);
+			}
+		};
+
+		submitData();
 
 		e.preventDefault();
-
-		navigate("/");
-
-		window.alert("Selamat data berhasil diubah!");
 	};
 
 	const handleDeleteNote = () => {
-		/*
-		Daripada menghapus note dari data notes lama 
-		kita membuat array baru berisi notes tanpa memasukan note yang dihapus
-		*/
-		const newNotes = allNotes.filter((note) => note.id !== currentNote.id);
-
+		// /*
+		// Daripada menghapus note dari data notes lama
+		// kita membuat array baru berisi notes tanpa memasukan note yang dihapus
+		// */
+		// const newNotes = allNotes.filter((note) => note.id !== currentNote.id);
 		// Mengosongkan state setelah dihapus
-		setCurrentNote(null);
-
+		// setCurrentNote(null);
 		// Simpan data notes baru ke state AllNotes
-		setAllNotes(newNotes);
-
+		// setAllNotes(newNotes);
 		// Update data di localstorage
-		localStorage.setItem("notes", JSON.stringify(newNotes));
-
+		// localStorage.setItem("notes", JSON.stringify(newNotes));
 		// navigasi ke page home setelah dihapus
-		navigate("/");
+		// navigate("/");
+		// window.alert("Selamat note berhasil dihapus!");
 
-		window.alert("Selamat note berhasil dihapus!");
+		const options = {
+			method: "DELETE",
+			headers: { "Content-Type": "application/json" },
+		};
+
+		const deleteData = async () => {
+			const response = await fetch(
+				`http://localhost:3001/note/${currentNote._id}`,
+				options,
+			);
+			if (response.ok) {
+				navigate("/");
+			} else {
+				window.alert(response.status, response.statusText);
+			}
+		};
+
+		deleteData();
 	};
 
 	const { title, note } = currentNote;
